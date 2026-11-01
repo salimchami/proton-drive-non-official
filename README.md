@@ -1,6 +1,6 @@
-# drive-sync
+# proton-drive-non-official
 
-Unofficial third-party Proton Drive sync client for Linux.
+Unofficial third-party Proton Drive sync client for Linux. The package, binary and service are named `drive-sync`.
 
 > **This is a third-party application not officially supported by Proton.**
 > It is not affiliated with, endorsed by or maintained by Proton AG.
