@@ -1,0 +1,19 @@
+{
+  "name": "drive-sync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Unofficial third-party Proton Drive sync client for Linux",
+  "license": "GPL-3.0-or-later",
+  "workspaces": [
+    "daemon",
+    "ui"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "check": "npm run check --workspaces",
+    "package": "npm run build -w daemon && node packaging/fetch-node.mjs && npm run tauri -w ui -- build --bundles deb"
+  }
+}

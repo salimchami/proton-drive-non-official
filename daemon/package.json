@@ -1,0 +1,28 @@
+{
+  "name": "@drive-sync/daemon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bidirectional sync daemon between a local folder and Proton Drive",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "tsc --noEmit",
+    "start": "node dist/main.mjs",
+    "test": "node build.mjs --tests && node --test --enable-source-maps --disable-warning=ExperimentalWarning \"dist-test/**/*.test.mjs\""
+  },
+  "dependencies": {
+    "@protontech/crypto": "2.2.0",
+    "@protontech/drive-sdk": "0.23.0",
+    "ky": "1.14.3",
+    "mime": "4.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "esbuild": "0.28.2",
+    "typescript": "~6.0.3"
+  }
+}

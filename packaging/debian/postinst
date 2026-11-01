@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+# Enables the user service for every user; it starts at their next login.
+if [ "$1" = "configure" ]; then
+    systemctl --global enable drive-sync.service || true
+fi

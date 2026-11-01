@@ -1,0 +1,12 @@
+[Unit]
+Description=drive-sync daemon (unofficial third-party Proton Drive sync client)
+After=network-online.target graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/drive-sync/node /usr/lib/drive-sync/daemon/main.mjs
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

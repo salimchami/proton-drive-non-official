@@ -1,0 +1,15 @@
+### IntelliJ IDEA ###
+out/
+.idea
+### Node ###
+node_modules/
+dist/
+dist-test/
+packaging/build/
+
+### Rust / Tauri ###
+ui/src-tauri/target/
+ui/src-tauri/gen/schemas/
+
+### OS ###
+.DS_Store
