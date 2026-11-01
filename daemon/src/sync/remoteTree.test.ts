@@ -106,3 +106,29 @@ test("folders are listed concurrently, within the limit, and all of them", async
     assert.ok(peak > 1 && peak <= 8, `peak concurrency ${peak}`);
     state.close();
 });
+
+test("nodes whose name would resolve outside their folder are skipped", async () => {
+    const state = new StateDb(":memory:");
+    const remote = new RemoteTree(
+        fakeDrive({
+            root: [
+                file("up", "root", "..", "r1"),
+                file("dot", "root", ".", "r2"),
+                file("empty", "root", "", "r3"),
+                file("slash", "root", "a/b", "r4"),
+                file("nul", "root", "a\0b", "r5"),
+                file("temp", "root", ".drive-sync-x", "r6"),
+                folder("evil", "root", ".."),
+                file("ok", "root", "ok.txt", "r7"),
+            ],
+            evil: [file("child", "evil", "passwd", "r8")],
+        }),
+        "root",
+        state,
+        silent,
+    );
+    await remote.loadAll();
+
+    assert.deepEqual([...remote.snapshot().keys()], ["ok.txt"]);
+    state.close();
+});

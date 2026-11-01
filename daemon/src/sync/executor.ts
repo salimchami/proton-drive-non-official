@@ -234,8 +234,15 @@ function parentUid(ctx: ExecutionContext, relPath: string): string {
     return parent.uid;
 }
 
+/** Fails closed: a path resolving to the local root itself or outside it is refused. */
 function absolute(ctx: ExecutionContext, relPath: string): string {
-    return path.join(ctx.localRoot, ...relPath.split("/"));
+    const root = path.resolve(ctx.localRoot);
+    const absPath = path.resolve(root, ...relPath.split("/"));
+    const prefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
+    if (!absPath.startsWith(prefix)) {
+        throw new Error(`path ${JSON.stringify(relPath)} is outside the local folder`);
+    }
+    return absPath;
 }
 
 function run(command: string, args: string[]): Promise<void> {

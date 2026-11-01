@@ -137,3 +137,23 @@ test("createRemoteFolder then upload places the file inside the new folder", asy
 
     assert.deepEqual(calls, ["mkdir root/d", "upload folder-d/e.txt:x"]);
 });
+
+test("a download to a path outside the local folder fails without writing it", async () => {
+    const outside = `${root}-outside.txt`;
+    const { drive } = fakeDrive({ f1: "remote content" });
+    const ctx = context(drive);
+    // As restored from a mirror stored before names were checked.
+    ctx.remote.record({ uid: "up", parentUid: "root", name: "..", type: "folder" });
+    ctx.remote.record({ uid: "f1", parentUid: "up", name: path.basename(outside), type: "file", revisionUid: "r1" });
+    const failures: unknown[] = [];
+    ctx.onResult = (_action, _relPath, error) => void (error && failures.push(error));
+
+    try {
+        await execute(ctx, [{ path: `../${path.basename(outside)}`, action: "download" }]);
+
+        assert.match(String(failures[0]), /outside the local folder/);
+        await assert.rejects(readFile(outside));
+    } finally {
+        await rm(outside, { force: true });
+    }
+});
