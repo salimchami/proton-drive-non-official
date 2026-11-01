@@ -1,6 +1,7 @@
 import { type DriveEvent, DriveEventType, type NodeEntity, NodeType, type ProtonDriveClient } from "@protontech/drive-sdk";
 
 import type { Logger } from "../vendor/proton-account/index.ts";
+import { TEMP_PREFIX } from "./localTree.ts";
 import type { EntryType, StateDb } from "./state.ts";
 
 export interface RemoteEntry {
@@ -268,6 +269,10 @@ function toRemoteEntry(node: NodeEntity, logger: Logger): RemoteEntry | undefine
         logger.warn(`Skipping node ${node.uid}: its name cannot be decrypted`);
         return undefined;
     }
+    if (!isSafeName(node.name.value)) {
+        logger.warn(`Skipping node ${node.uid}: its name is not a valid local file name`);
+        return undefined;
+    }
     if (node.type === NodeType.Folder) {
         return { uid: node.uid, parentUid: node.parentUid, name: node.name.value, type: "folder" };
     }
@@ -284,4 +289,20 @@ function toRemoteEntry(node: NodeEntity, logger: Logger): RemoteEntry | undefine
         ...(revision.claimedDigests?.sha1 !== undefined && { sha1: revision.claimedDigests.sha1 }),
         ...(revision.claimedSize !== undefined && { size: revision.claimedSize }),
     };
+}
+
+/**
+ * Names are set by whoever writes to the Drive, shared folders included: one that is empty,
+ * "." or "..", or holds "/" or NUL would resolve outside its folder once joined to the local root.
+ * Names with the temporary-file prefix are skipped as the local scan skips them.
+ */
+export function isSafeName(name: string): boolean {
+    return (
+        name !== "" &&
+        name !== "." &&
+        name !== ".." &&
+        !name.includes("/") &&
+        !name.includes("\0") &&
+        !name.startsWith(TEMP_PREFIX)
+    );
 }
